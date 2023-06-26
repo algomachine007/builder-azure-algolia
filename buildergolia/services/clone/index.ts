@@ -9,7 +9,7 @@ import {
   IDataToTransformToAlgolia,
   IUpdateDataInAlgolia,
 } from "./types";
-
+ 
 export class CloneService implements ICloneService {
   private getFaqIndex() {
     switch (process.env.ENVIRONMENT) {
@@ -45,7 +45,9 @@ export class CloneService implements ICloneService {
 
   public async cloneFaqToAlgolia(command: IDataToTransformToAlgolia) {
     try {
-      const index = this.getFaqIndex();
+      // const index = this.getFaqIndex();
+
+      const index = "faq_test";
 
       const algoliaService = new AlgoliaService();
 
@@ -63,7 +65,8 @@ export class CloneService implements ICloneService {
 
   public async deleteFaqCategoryInAlgolia(command: IDataToTransformToAlgolia) {
     try {
-      const index = this.getFaqIndex();
+      // const index = this.getFaqIndex();
+      const index = "faq_test";
       const algoliaService = new AlgoliaService();
       const transformedDataToAlgoliaFormat =
         await this.transformFaqToAlgoliaFormat(command);
@@ -78,7 +81,8 @@ export class CloneService implements ICloneService {
 
   public async updateFaqCategoryInAlgolia(command: IUpdateDataInAlgolia) {
     try {
-      const index = this.getFaqIndex();
+      // const index = this.getFaqIndex();
+      const index = "faq_test";
       const algoliaService = new AlgoliaService();
 
       const categoryId = command.category.id;

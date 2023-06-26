@@ -1,4 +1,4 @@
-import { builder } from "@builder.io/react";
+import { builder } from "@builder.io/sdk";
 
 import { BuilderModels } from "../../builder/constants/models";
 import { mapFaqsToCategories } from "./map-faqs-to-categories";

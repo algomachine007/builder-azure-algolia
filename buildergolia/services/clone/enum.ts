@@ -1,5 +1,5 @@
 export enum FAQ_INDEX {
-  DEV = "builder-faq-category",
+  DEV = "faq_test",
   STAGING = "builder-faq-category",
   PRODUCTION = "builder-faq-category",
 }

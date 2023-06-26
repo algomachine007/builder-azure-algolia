@@ -6,23 +6,7 @@ const httpTrigger: AzureFunction = async function (
   context: Context,
   req: HttpRequest,
 ): Promise<void> {
-  context.log("REQ OBJECT", req.body);
-
-  //   context.log("HTTP trigger function processed a request.");
-  //   const name = req.query.name || (req.body && req.body.name);
-  //   const responseMessage = name
-  //     ? "Hello, " +
-  //       name +
-  //       ". This HTTP triggered function executed successfully."
-  //     : "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.";
-
-  //   context.res = {
-  //     // status: 200, /* Defaults to 200 */
-  //     body: responseMessage,
-  //   };
-
   try {
-    // bail out early
     if (req.body === undefined) {
       context.res = {
         status: 400,
@@ -31,6 +15,7 @@ const httpTrigger: AzureFunction = async function (
     }
 
     const algoliaService = new CloneService();
+
     switch (req.body?.operation) {
       case BUILDER_EVENT.DELETE: {
         const responseMessage = await algoliaService.deleteFaqCategoryInAlgolia(
@@ -38,6 +23,7 @@ const httpTrigger: AzureFunction = async function (
         );
         context.res = {
           body: responseMessage,
+          status: "deleted",
         };
       }
 
@@ -46,8 +32,13 @@ const httpTrigger: AzureFunction = async function (
           !req.body?.previousValue?.lastUpdateBy &&
           !req.body?.newValue?.lastUpdateBy
         ) {
-          context.log("REQ OBJECT", req.body);
-          await algoliaService.cloneFaqToAlgolia(req.body?.newValue);
+          const responseMessage = await algoliaService.cloneFaqToAlgolia(
+            req.body?.newValue,
+          );
+          context.res = {
+            body: responseMessage,
+            status: "created",
+          };
           //   return res
           //     .status(HTTP_STATUS.OK.CODE)
           //     .send(HTTP_STATUS.CREATED.MESSAGE);
@@ -57,6 +48,7 @@ const httpTrigger: AzureFunction = async function (
         );
         context.res = {
           body: responseMessage,
+          status: "updated",
         };
 
         // return res

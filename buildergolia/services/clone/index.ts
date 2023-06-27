@@ -9,10 +9,10 @@ import {
   IDataToTransformToAlgolia,
   IUpdateDataInAlgolia,
 } from "./types";
- 
+
 export class CloneService implements ICloneService {
   private getFaqIndex() {
-    switch (process.env.ENVIRONMENT) {
+    switch (process.env.AZURE_FUNCTIONS_ENVIRONMENT) {
       case ENVIRONMENT.DEVELOPMENT:
         return FAQ_INDEX.DEV;
 
@@ -28,6 +28,7 @@ export class CloneService implements ICloneService {
     data: IDataToTransformToAlgolia,
   ): Promise<IAlgoliaObjectCommand[]> => {
     const faqOfCategory = await fetchFaqCategory(data);
+
     const result = [];
 
     if (faqOfCategory) {
@@ -37,7 +38,6 @@ export class CloneService implements ICloneService {
         slug: faqOfCategory.slug,
         questions: faqOfCategory.questions,
       };
-
       result.push(response);
     }
     return result;
@@ -45,9 +45,9 @@ export class CloneService implements ICloneService {
 
   public async cloneFaqToAlgolia(command: IDataToTransformToAlgolia) {
     try {
-      // const index = this.getFaqIndex();
+      const index = this.getFaqIndex();
 
-      const index = "faq_test";
+      // const index = "faq_test";
 
       const algoliaService = new AlgoliaService();
 
@@ -65,13 +65,16 @@ export class CloneService implements ICloneService {
 
   public async deleteFaqCategoryInAlgolia(command: IDataToTransformToAlgolia) {
     try {
-      // const index = this.getFaqIndex();
-      const index = "faq_test";
+      const index = this.getFaqIndex();
+
+      console.log("item to delete", command);
+      // const index = "faq_test";
       const algoliaService = new AlgoliaService();
       const transformedDataToAlgoliaFormat =
         await this.transformFaqToAlgoliaFormat(command);
 
       for (const faqCategory of transformedDataToAlgoliaFormat) {
+        console.log("to delete ❌", faqCategory);
         await algoliaService.deleteFaqCategory(faqCategory.objectID, index);
       }
     } catch (error) {
@@ -81,11 +84,13 @@ export class CloneService implements ICloneService {
 
   public async updateFaqCategoryInAlgolia(command: IUpdateDataInAlgolia) {
     try {
-      // const index = this.getFaqIndex();
-      const index = "faq_test";
+      const index = this.getFaqIndex();
+      // const index = "faq_test";
       const algoliaService = new AlgoliaService();
 
       const categoryId = command.category.id;
+
+      console.log("categoryId", categoryId);
 
       const faqOfCategory = await getFaqCategoryById(categoryId);
 

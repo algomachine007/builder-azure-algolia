@@ -5,7 +5,10 @@ import { usageClient } from "./config";
 import { IAlgoliaService } from "./types";
 export class AlgoliaService implements IAlgoliaService {
   private createIndex(index) {
-    return usageClient.initIndex(index);
+    console.log("Index, ", index);
+    const indexx = "faq_test";
+    // console.log("USAGE CLIENT", usageClient);
+    return usageClient.initIndex(indexx);
   }
 
   async saveFaqCategoryToAlgolia(data, index) {
@@ -13,7 +16,7 @@ export class AlgoliaService implements IAlgoliaService {
       const algoliaInstance = this.createIndex(index) as SearchIndex;
       await algoliaInstance.saveObjects(data);
     } catch (error) {
-      throw new NnoxxError(`[AlgoliaService] ${error.message}`);
+      throw new NnoxxError(`[AlgoliaService saveFaq] ${error.message}`);
     }
   }
 
@@ -22,11 +25,12 @@ export class AlgoliaService implements IAlgoliaService {
       const algoliaInstance = this.createIndex(index) as SearchIndex;
       await algoliaInstance.deleteObject(categoryObjectID);
     } catch (error) {
-      throw new NnoxxError(`[AlgoliaService] ${error.message}`);
+      throw new NnoxxError(`[AlgoliaService deleteFaq] ${error.message}`);
     }
   }
 
   async updateFaqCategory(objectToUpdate, index) {
+    console.log("objectToUpdate", objectToUpdate);
     try {
       const algoliaInstance = this.createIndex(index) as SearchIndex;
       await algoliaInstance
@@ -35,7 +39,7 @@ export class AlgoliaService implements IAlgoliaService {
         })
         .wait();
     } catch (error) {
-      throw new NnoxxError(`[AlgoliaService] ${error.message}`);
+      throw new NnoxxError(`[AlgoliaService updateFaq] ${error.message}`);
     }
   }
 }

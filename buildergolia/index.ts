@@ -7,20 +7,21 @@ const httpTrigger: AzureFunction = async function (
   req: HttpRequest,
 ): Promise<void> {
   try {
-    if (req.body === undefined) {
+    const cloneFaqToAlgoliaService = new CloneService();
+
+    if (!req.body) {
       context.res = {
         status: 400,
         body: "Req.body is undefined, please check your connection",
       };
     }
 
-    const algoliaService = new CloneService();
-
     switch (req.body?.operation) {
       case BUILDER_EVENT.DELETE: {
-        const responseMessage = await algoliaService.deleteFaqCategoryInAlgolia(
-          req.body?.previousValue,
-        );
+        const responseMessage =
+          await cloneFaqToAlgoliaService.deleteFaqCategoryInAlgolia(
+            req.body?.previousValue,
+          );
         context.res = {
           body: responseMessage,
           status: "deleted",
@@ -32,28 +33,25 @@ const httpTrigger: AzureFunction = async function (
           !req.body?.previousValue?.lastUpdateBy &&
           !req.body?.newValue?.lastUpdateBy
         ) {
-          const responseMessage = await algoliaService.cloneFaqToAlgolia(
-            req.body?.newValue,
-          );
+          const responseMessage =
+            await cloneFaqToAlgoliaService.cloneFaqToAlgolia(
+              req.body?.newValue,
+            );
+          context.log("CREATED", responseMessage);
           context.res = {
             body: responseMessage,
             status: "created",
           };
-          //   return res
-          //     .status(HTTP_STATUS.OK.CODE)
-          //     .send(HTTP_STATUS.CREATED.MESSAGE);
+        } else {
+          const responseMessage =
+            await cloneFaqToAlgoliaService.updateFaqCategoryInAlgolia(
+              req.body?.newValue?.data,
+            );
+          context.res = {
+            body: responseMessage,
+            status: "updated",
+          };
         }
-        const responseMessage = await algoliaService.updateFaqCategoryInAlgolia(
-          req.body?.newValue?.data,
-        );
-        context.res = {
-          body: responseMessage,
-          status: "updated",
-        };
-
-        // return res
-        //   .status(HTTP_STATUS.CREATED.CODE)
-        //   .send(HTTP_STATUS.CREATED.MESSAGE);
       }
     }
   } catch (error) {

@@ -29,6 +29,23 @@ const httpTrigger: AzureFunction = async function (
       }
 
       case BUILDER_EVENT.PUBLISH: {
+        // simply update the faq-category
+        if (
+          req.body?.modelName === "faq-category" &&
+          !req.body?.previousValue?.lastUpdateBy &&
+          !req.body?.newValue?.lastUpdateBy
+        ) {
+          context.log("update faq-category here", req.body);
+          const responseMessage =
+            await cloneFaqToAlgoliaService.updateFaqCategoryInAlgolia(
+              req.body?.newValue?.data,
+            );
+          context.res = {
+            body: responseMessage,
+            status: "updated",
+          };
+        }
+
         if (
           !req.body?.previousValue?.lastUpdateBy &&
           !req.body?.newValue?.lastUpdateBy
@@ -43,6 +60,7 @@ const httpTrigger: AzureFunction = async function (
             status: "created",
           };
         } else {
+          context.log("body here", req.body);
           const responseMessage =
             await cloneFaqToAlgoliaService.updateFaqCategoryInAlgolia(
               req.body?.newValue?.data,

@@ -45,9 +45,9 @@ export class CloneService implements ICloneService {
 
   public async cloneFaqToAlgolia(command: IDataToTransformToAlgolia) {
     try {
-      const index = this.getFaqIndex();
+      // const index = this.getFaqIndex();
 
-      // const index = "faq_test";
+      const index = "faq_test";
 
       const algoliaService = new AlgoliaService();
 
@@ -90,9 +90,15 @@ export class CloneService implements ICloneService {
 
       const categoryId = command.category.id;
 
+      console.log("command", command);
+
+      // if it includes category, then update the title and slug with command data
+
       console.log("categoryId", categoryId);
 
       const faqOfCategory = await getFaqCategoryById(categoryId);
+
+      console.log("Actual faq to update", faqOfCategory);
 
       const questionToUpdate = faqOfCategory.questions.find(
         (question) => question.question,
